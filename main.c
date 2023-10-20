@@ -35,15 +35,15 @@ nodo* crearNodo (persona aux);
 nodo* inicNodo ();
 nodo* agregarPpio (nodo* lista, nodo* nuevoNodo);
 nodo* cargarAlista (nodoArbol *arbolito, nodo* lista);
+int altura_arbol(nodoArbol* arbolito);
 
 void preorder(nodoArbol* arbolito);
 void inorder(nodoArbol *arbolito);
 void recorrerLista (nodo* lista);
 void recorrer(nodoArbol *arbolito);
+void mostrarRama(nodoArbol *arbolito);
 
-
-
-
+int cantidad_hojas (nodoArbol* arbolito);
 
 int main()
 {
@@ -52,7 +52,9 @@ int main()
     char letra = 's';
     char nombre[30];
     int legajo;
+    int cantHojas = 0;
     persona dato;
+    int alturaArbolito = 0;
 
     while(letra == 's')
     {
@@ -93,14 +95,21 @@ int main()
     scanf("%i", &legajo);
 
     nodoArbol* rta = buscarEnArbol(arbolito, legajo);
-    inorder(rta);
+    mostrarRama(rta);
 
     printf("Ingrese el nombre a buscar: ");
     fflush(stdin);
     gets(nombre);
 
     rta = buscarEnArbolNombre(arbolito, nombre);
-    inorder(rta);
+    mostrarRama(rta);
+
+    cantHojas = cantidad_hojas(arbolito);
+    printf("Cantidad de hojas del arbol: %d", cantHojas);
+
+    alturaArbolito = altura_arbol (arbolito);
+    printf("La altura del arbol es de : %d", alturaArbolito);
+
 }
 
 nodoArbol* inicNodoArbol()
@@ -162,12 +171,21 @@ void inorder(nodoArbol *arbolito)
 
     if(arbolito)
     {
-//        inorder(arbolito->izq);
+        inorder(arbolito->izq);
         printf("/ %d /", arbolito->dato.legajo);
-//        inorder(arbolito->der);
+        inorder(arbolito->der);
 
     }
 }
+
+void mostrarRama(nodoArbol *arbolito)
+{
+
+    printf("NRO Legajo: %i \n", arbolito->dato.legajo);
+    printf("Nombre: %s \n", arbolito->dato.nombre);
+    printf("Edad: %i \n", arbolito->dato.edad);
+}
+
 
 nodo* crearNodo (persona aux)
 {
@@ -262,16 +280,63 @@ nodoArbol* buscarEnArbolNombre(nodoArbol* arbolito, char nombre[])
 
     if(arbolito)
     {
-        if(strcmp(arbolito->dato.nombre, nombre) == 0)
-            rta = arbolito;
+
+        if(strcmp(arbolito->dato.nombre, nombre) != 0)
+        {
+
+            rta = buscarEnArbolNombre(arbolito->izq, nombre);
+
+            if(!rta)
+            rta = buscarEnArbolNombre(arbolito->der, nombre);
+        }
         else
         {
-                rta = buscarEnArbolNombre(arbolito, nombre);
-                rta = buscarEnArbolNombre(arbolito, nombre);
+
+            rta = arbolito;
         }
     }
 
     return rta;
 }
 
+int cantidad_hojas (nodoArbol* arbolito)
+{
+    int i = 0;
 
+    if(arbolito)
+    {
+        if(arbolito->izq == NULL && arbolito->der == NULL)
+            i=1;
+        else
+            i = cantidad_hojas(arbolito->izq) + cantidad_hojas(arbolito->der);
+    }
+
+    return i;
+}
+
+int altura_arbol(nodoArbol* arbolito)
+{
+
+    int alturaIzq = 0;
+    int alturaDer = 0;
+    int rta = 0;
+    if(arbolito)
+        {
+            rta++;
+            if(arbolito->izq != NULL)
+            {
+               alturaIzq += altura_arbol(arbolito->izq);
+            }
+            if(arbolito->der != NULL)
+            {
+                alturaDer += altura_arbol(arbolito->der);
+
+            }
+
+            if(alturaDer>alturaIzq)
+                rta += alturaDer;
+            else
+                rta += alturaIzq;
+        }
+    return rta;
+}
