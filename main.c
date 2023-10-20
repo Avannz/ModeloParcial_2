@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <windows.h>
 
-/// Estructuras
+/// ESTRUCTURAS ///
 
 typedef struct
 {
@@ -25,17 +26,17 @@ typedef struct nodo
 } nodo;
 
 
-/// Prototipado
+/// PROTOTIPADOS ///
 
 nodoArbol* insertar (nodoArbol* arbolito, persona dato);
 nodoArbol* inicNodoArbol();
 nodoArbol* buscarEnArbol(nodoArbol* arbolito, int legajo);
 nodoArbol* buscarEnArbolNombre(nodoArbol* arbolito, char nombre[]);
+
 nodo* crearNodo (persona aux);
 nodo* inicNodo ();
 nodo* agregarPpio (nodo* lista, nodo* nuevoNodo);
 nodo* cargarAlista (nodoArbol *arbolito, nodo* lista);
-int altura_arbol(nodoArbol* arbolito);
 
 void preorder(nodoArbol* arbolito);
 void inorder(nodoArbol *arbolito);
@@ -43,31 +44,38 @@ void recorrerLista (nodo* lista);
 void recorrer(nodoArbol *arbolito);
 void mostrarRama(nodoArbol *arbolito);
 
+int altura_arbol(nodoArbol* arbolito);
 int cantidad_hojas (nodoArbol* arbolito);
+
+/// MAIN ///
 
 int main()
 {
     nodo* lista = inicNodo();
     nodoArbol* arbolito = inicNodoArbol();
+
     char letra = 's';
     char nombre[30];
+
+    int opc;
     int legajo;
     int cantHojas = 0;
-    persona dato;
     int alturaArbolito = 0;
+    persona dato;
 
     while(letra == 's')
     {
 
-        printf("Ingresa un leg al arbol: ");
+
+        printf("Ingresa un legajo a la persona: ");
         fflush(stdin);
         scanf("%i", &dato.legajo);
 
-        printf("Ingresa un ed al arbol: ");
+        printf("Ingresale una edad: ");
         fflush(stdin);
         scanf("%i", &dato.edad);
 
-        printf("Ingresa un n al arbol: ");
+        printf("Ingresa su nombre: ");
         fflush(stdin);
         gets(dato.nombre);
 
@@ -77,38 +85,82 @@ int main()
         fflush(stdin);
         scanf("%c", &letra);
 
+        system("cls");
     }
 
-
-    printf("MOSTRAR ARBOL: \n");
-    inorder (arbolito);
-
-    printf("\nMOSTRAR LISTA: \n");
-    lista = cargarAlista(arbolito, lista);
-    recorrerLista(lista);
-
-    ///PUNTO CUATRO///
-
-
-    printf("Ingrese el legajo a buscar: ");
+    printf("Seleccione un ejercicio 2/ 3/ 4/ 5/ 6/ 7/ 8/ || ");
     fflush(stdin);
-    scanf("%i", &legajo);
+    scanf("%i", &opc);
 
-    nodoArbol* rta = buscarEnArbol(arbolito, legajo);
-    mostrarRama(rta);
+    switch(opc)
+    {
 
-    printf("Ingrese el nombre a buscar: ");
-    fflush(stdin);
-    gets(nombre);
+    case 2:
 
-    rta = buscarEnArbolNombre(arbolito, nombre);
-    mostrarRama(rta);
 
-    cantHojas = cantidad_hojas(arbolito);
-    printf("Cantidad de hojas del arbol: %d", cantHojas);
 
-    alturaArbolito = altura_arbol (arbolito);
-    printf("La altura del arbol es de : %d", alturaArbolito);
+        printf("MOSTRAR ARBOL: \n");
+        inorder (arbolito);
+
+        break;
+
+    case 3:
+
+
+        lista = cargarAlista(arbolito, lista);
+
+        printf("\n\nMOSTRAR LISTA: \n");
+        recorrerLista(lista);
+
+        break;
+
+
+
+    case 4:
+
+        printf("Ingrese el legajo a buscar: ");
+        fflush(stdin);
+        scanf("%i", &legajo);
+
+        nodoArbol* rta = buscarEnArbol(arbolito, legajo);
+        mostrarRama(rta);
+
+        break;
+
+    case 5:
+
+
+
+        printf("Ingrese el nombre a buscar: ");
+        fflush(stdin);
+        gets(nombre);
+
+        rta = buscarEnArbolNombre(arbolito, nombre);
+        mostrarRama(rta);
+
+        break;
+
+    case 6:
+
+        alturaArbolito = altura_arbol (arbolito);
+        printf("La altura del arbol es de : %d", alturaArbolito);
+
+        break;
+
+    case 7:
+
+
+
+    case 8:
+
+
+
+        cantHojas = cantidad_hojas(arbolito);
+        printf("Cantidad de hojas del arbol: %d", cantHojas);
+
+        break;
+
+    }
 
 }
 
@@ -181,7 +233,7 @@ void inorder(nodoArbol *arbolito)
 void mostrarRama(nodoArbol *arbolito)
 {
 
-    printf("NRO Legajo: %i \n", arbolito->dato.legajo);
+    printf("\nNumero de Legajo: %i \n", arbolito->dato.legajo);
     printf("Nombre: %s \n", arbolito->dato.nombre);
     printf("Edad: %i \n", arbolito->dato.edad);
 }
@@ -287,7 +339,7 @@ nodoArbol* buscarEnArbolNombre(nodoArbol* arbolito, char nombre[])
             rta = buscarEnArbolNombre(arbolito->izq, nombre);
 
             if(!rta)
-            rta = buscarEnArbolNombre(arbolito->der, nombre);
+                rta = buscarEnArbolNombre(arbolito->der, nombre);
         }
         else
         {
@@ -321,22 +373,22 @@ int altura_arbol(nodoArbol* arbolito)
     int alturaDer = 0;
     int rta = 0;
     if(arbolito)
+    {
+        rta++;
+        if(arbolito->izq != NULL)
         {
-            rta++;
-            if(arbolito->izq != NULL)
-            {
-               alturaIzq += altura_arbol(arbolito->izq);
-            }
-            if(arbolito->der != NULL)
-            {
-                alturaDer += altura_arbol(arbolito->der);
-
-            }
-
-            if(alturaDer>alturaIzq)
-                rta += alturaDer;
-            else
-                rta += alturaIzq;
+            alturaIzq += altura_arbol(arbolito->izq);
         }
+        if(arbolito->der != NULL)
+        {
+            alturaDer += altura_arbol(arbolito->der);
+
+        }
+
+        if(alturaDer>alturaIzq)
+            rta += alturaDer;
+        else
+            rta += alturaIzq;
+    }
     return rta;
 }
