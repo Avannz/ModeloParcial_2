@@ -46,6 +46,7 @@ void mostrarRama(nodoArbol *arbolito);
 
 int altura_arbol(nodoArbol* arbolito);
 int cantidad_hojas (nodoArbol* arbolito);
+int calcular_cant_nodos (nodoArbol* arbolito);
 
 /// MAIN ///
 
@@ -60,6 +61,7 @@ int main()
     int opc;
     int legajo;
     int cantHojas = 0;
+    int cantNodos = 0;
     int alturaArbolito = 0;
     persona dato;
 
@@ -149,7 +151,10 @@ int main()
 
     case 7:
 
+        cantNodos = calcular_cant_nodos(arbolito);
+        printf("\n * La cantidad de nodos es: %d", cantNodos);
 
+        break;
 
     case 8:
 
@@ -391,4 +396,55 @@ int altura_arbol(nodoArbol* arbolito)
             rta += alturaIzq;
     }
     return rta;
+}
+
+int calcular_cant_nodos (nodoArbol* arbolito)
+{
+
+    int cantNodos = 0;
+
+
+    if(arbolito)
+    {
+        cantNodos++;
+        if(arbolito->izq != NULL)
+        {
+
+            cantNodos += calcular_cant_nodos(arbolito->izq);
+
+        }
+        if(arbolito->der != NULL)
+        {
+
+            cantNodos += calcular_cant_nodos(arbolito->der);
+        }
+    }
+
+    return cantNodos;
+}
+
+nodoArbol* eliminar_hojas (nodoArbol* arbolito, int valor)
+{
+
+    nodoArbol* aux = inicNodoArbol();
+
+    if(arbolito)
+    {
+        
+        if(arbolito->dato == valor)
+        {
+            aux = arbolito;
+            
+        }
+        else
+        {
+        
+            eliminar_hojas(arbolito->izq);
+            
+            if(!aux)
+            eliminar_hojas(arbolito->der);
+        }
+        
+
+    }
 }
