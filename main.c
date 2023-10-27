@@ -47,6 +47,9 @@ void mostrarRama(nodoArbol *arbolito);
 int altura_arbol(nodoArbol* arbolito);
 int cantidad_hojas (nodoArbol* arbolito);
 int calcular_cant_nodos (nodoArbol* arbolito);
+nodoArbol* nodo_mas_derecha (nodoArbol* arbolito);
+nodoArbol* nodo_mas_izquierda (nodoArbol* arbolito);
+nodoArbol * borrar_arbol (nodoArbol * arbolito, int dato);
 
 /// MAIN ///
 
@@ -162,6 +165,17 @@ int main()
 
         cantHojas = cantidad_hojas(arbolito);
         printf("Cantidad de hojas del arbol: %d", cantHojas);
+
+        break;
+
+    case 9:
+
+            printf("Ingresa el legajo a eliminar: ");
+            fflush(stdin);
+            scanf("%i", &legajo);
+
+            arbolito = borrar_arbol(arbolito, legajo);
+            inorder(arbolito);
 
         break;
 
@@ -423,28 +437,75 @@ int calcular_cant_nodos (nodoArbol* arbolito)
     return cantNodos;
 }
 
-nodoArbol* eliminar_hojas (nodoArbol* arbolito, int valor)
+nodoArbol* nodo_mas_derecha (nodoArbol* arbolito)
+{
+    nodoArbol* aux = inicNodoArbol();
+
+    if(arbolito->der)
+    {
+
+        aux =   nodo_mas_derecha(arbolito->der);
+    }
+
+    return aux;
+}
+
+nodoArbol* nodo_mas_izquierda (nodoArbol* arbolito)
 {
 
     nodoArbol* aux = inicNodoArbol();
 
+    if(arbolito->izq)
+    {
+
+        aux = nodo_mas_izquierda(arbolito->izq);
+    }
+
+    return aux;
+}
+
+nodoArbol * borrar_arbol (nodoArbol * arbolito, int dato)
+{
+
     if(arbolito)
     {
-        
-        if(arbolito->dato == valor)
+        if(dato == arbolito->dato.legajo)
         {
-            aux = arbolito;
-            
+
+            if(arbolito->izq != NULL)
+            {
+                nodoArbol* masDer = nodo_mas_derecha(arbolito->izq);
+                arbolito->dato = masDer->dato;
+                arbolito->izq = borrar_arbol(arbolito->izq, masDer->dato.legajo);
+            }
+            else if (arbolito->izq != NULL){
+
+                nodoArbol* masIzq = nodo_mas_izquierda(arbolito->der);
+                arbolito->dato = masIzq->dato;
+                arbolito->der = borrar_arbol(arbolito->der, masIzq->dato.legajo);
+
+            }
+            else
+            {
+                free(arbolito);
+                arbolito = NULL;
+            }
         }
-        else
+
+        if(dato > arbolito->dato.legajo)
         {
-        
-            eliminar_hojas(arbolito->izq);
-            
-            if(!aux)
-            eliminar_hojas(arbolito->der);
+            arbolito->der = borrar_arbol(arbolito->der,dato);
         }
-        
+
+        if(dato < arbolito->dato.legajo)
+        {
+            arbolito->izq = borrar_arbol(arbolito->izq,dato);
+        }
+    }
+    if(arbolito == NULL)
+    {
 
     }
+
+    return arbolito;
 }
