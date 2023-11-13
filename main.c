@@ -3,436 +3,291 @@
 #include <string.h>
 #include <windows.h>
 
-/// ESTRUCTURAS ///
 
 typedef struct
 {
-    int legajo;
-    char nombre[20];
+    char nombreYapellido [30];
     int edad;
-} persona;
+    int dni;
+} personaje;
 
-typedef struct nodoArbol
+typedef struct
 {
-    persona dato;
-    struct nodoArbol * izq;
-    struct nodoArbol * der;
-} nodoArbol;
+    personaje dato;
+    struct nodoLista* anterior;
+    struct nodoLista* siguiente;
+} nodoLista;
 
-typedef struct nodo
+typedef struct
 {
-    persona dato;
-    struct nodo * sig;
-} nodo;
+    char nombreEspecie[20]; //vampiro, hombre lobo, hada, medium, cambia formas, humano
+    int rankPeligrosidad; //1 el m�s peligroso, 6 el menos peligroso
+    float promedioEdad; // 0
+    nodoLista* personajes; //lista de personajes que pertencen a esta especie
+} especie;
+
+typedef struct
+{
+    especie aux[30];
+    struct nodoArbol *der;
+    struct nodoArbol *izq;
+    
+}nodoArbol;
 
 
-/// PROTOTIPADOS ///
+/// PROTOTIPADO ///
 
-nodoArbol* insertar (nodoArbol* arbolito, persona dato);
-nodoArbol* inicNodoArbol();
-nodoArbol* buscarEnArbol(nodoArbol* arbolito, int legajo);
-nodoArbol* buscarEnArbolNombre(nodoArbol* arbolito, char nombre[]);
+void mostrar_lista(nodoLista* lista);
+int agregar_contenido(especie arreglo[], int dimension, int validos);
+int buscar_posicion(especie arreglo[], int dimension, char nuevaEspecie[]);
+int buscar_rango(especie arreglo[], int dimension, int rango);
+int agregar_especie(especie arreglo[], int validos, char nuevaEspecie[], int rango);
+nodoLista* iniciar_nodo();
+nodoLista* crear_nodo(personaje dato);
+nodoLista* agregar_principio(nodoLista* lista, nodoLista* nuevoNodo);
 
-nodo* crearNodo (persona aux);
-nodo* inicNodo ();
-nodo* agregarPpio (nodo* lista, nodo* nuevoNodo);
-nodo* cargarAlista (nodoArbol *arbolito, nodo* lista);
-
-void preorder(nodoArbol* arbolito);
-void inorder(nodoArbol *arbolito);
-void recorrerLista (nodo* lista);
-void recorrer(nodoArbol *arbolito);
-void mostrarRama(nodoArbol *arbolito);
-
-int altura_arbol(nodoArbol* arbolito);
-int cantidad_hojas (nodoArbol* arbolito);
-int calcular_cant_nodos (nodoArbol* arbolito);
-nodoArbol* nodo_mas_derecha (nodoArbol* arbolito);
-nodoArbol* nodo_mas_izquierda (nodoArbol* arbolito);
-nodoArbol * borrar_arbol (nodoArbol * arbolito, int dato);
-
-/// MAIN ///
 
 int main()
 {
-    nodo* lista = inicNodo();
-    nodoArbol* arbolito = inicNodoArbol();
 
-    char letra = 's';
-    char nombre[30];
+    especie arreglo[6];
+    int validos = 0;
+    char especie[30];
+    int pos = -1;
 
-    int opc;
-    int legajo;
-    int cantHojas = 0;
-    int cantNodos = 0;
-    int alturaArbolito = 0;
-    persona dato;
+    validos = agregar_contenido(arreglo, 6, validos);
 
-    while(letra == 's')
-    {
-
-
-        printf("Ingresa un legajo a la persona: ");
-        fflush(stdin);
-        scanf("%i", &dato.legajo);
-
-        printf("Ingresale una edad: ");
-        fflush(stdin);
-        scanf("%i", &dato.edad);
-
-        printf("Ingresa su nombre: ");
-        fflush(stdin);
-        gets(dato.nombre);
-
-        arbolito = insertar(arbolito, dato);
-
-        printf("Ingresa 's' para continuar: ");
-        fflush(stdin);
-        scanf("%c", &letra);
-
-        system("cls");
-    }
-
-    printf("Seleccione un ejercicio 2/ 3/ 4/ 5/ 6/ 7/ 8/ || ");
+    printf("Que especie desea mostrar?: ");
     fflush(stdin);
-    scanf("%i", &opc);
+    gets(&especie);
 
-    switch(opc)
-    {
+    pos = buscar_posicion(arreglo, 6, especie);
 
-    case 2:
+    mostrar_especie(arreglo, pos);
 
-
-
-        printf("MOSTRAR ARBOL: \n");
-        inorder (arbolito);
-
-        break;
-
-    case 3:
-
-
-        lista = cargarAlista(arbolito, lista);
-
-        printf("\n\nMOSTRAR LISTA: \n");
-        recorrerLista(lista);
-
-        break;
-
-
-
-    case 4:
-
-        printf("Ingrese el legajo a buscar: ");
-        fflush(stdin);
-        scanf("%i", &legajo);
-
-        nodoArbol* rta = buscarEnArbol(arbolito, legajo);
-        mostrarRama(rta);
-
-        break;
-
-    case 5:
-
-
-
-        printf("Ingrese el nombre a buscar: ");
-        fflush(stdin);
-        gets(nombre);
-
-        rta = buscarEnArbolNombre(arbolito, nombre);
-        mostrarRama(rta);
-
-        break;
-
-    case 6:
-
-        alturaArbolito = altura_arbol (arbolito);
-        printf("La altura del arbol es de : %d", alturaArbolito);
-
-        break;
-
-    case 7:
-
-        cantNodos = calcular_cant_nodos(arbolito);
-        printf("\n * La cantidad de nodos es: %d", cantNodos);
-
-        break;
-
-    case 8:
-
-
-
-        cantHojas = cantidad_hojas(arbolito);
-        printf("Cantidad de hojas del arbol: %d", cantHojas);
-
-        break;
-
-    case 9:
-
-            printf("Ingresa el legajo a eliminar: ");
-            fflush(stdin);
-            scanf("%i", &legajo);
-
-            arbolito = borrar_arbol(arbolito, legajo);
-            inorder(arbolito);
-
-        break;
-
-    }
 
 }
 
-nodoArbol* inicNodoArbol()
+
+nodoLista* iniciar_nodo()
 {
+
     return NULL;
 }
 
-
-nodoArbol* crearNodoArbol (persona dato)
+nodoLista* crear_nodo(personaje dato)
 {
-    nodoArbol* aux = malloc(sizeof(nodoArbol));
-    aux->dato= dato;
-    aux->der = NULL;
-    aux->izq = NULL;
+
+    nodoLista*  aux = (nodoLista*)malloc(sizeof(nodoLista));
+
+    aux->dato = dato;
+    aux->anterior = NULL;
+    aux->siguiente = NULL;
 
     return aux;
 }
 
-nodoArbol* insertar (nodoArbol* arbolito, persona dato)
+nodoLista* agregar_principio(nodoLista* lista, nodoLista* nuevoNodo)
 {
 
-    if(!arbolito)
+    nuevoNodo->siguiente = lista;
+
+    if(lista)
     {
 
-        arbolito = crearNodoArbol(dato);
-    }
-    else
-    {
-        if(dato.legajo > arbolito->dato.legajo)
-        {
-            arbolito->der = insertar(arbolito->der, dato);
-
-        }
-        else
-        {
-
-            arbolito->izq = insertar(arbolito->izq, dato);
-        }
-
+        lista->anterior = nuevoNodo;
     }
 
-    return arbolito;
+    return nuevoNodo;
 }
 
-void preorder(nodoArbol* arbolito)
-{
-
-    if(arbolito != NULL)
-    {
-
-        printf("/ %d /", arbolito->dato.legajo);
-        preorder(arbolito->izq);
-        preorder(arbolito->der);
-    }
-}
-
-void inorder(nodoArbol *arbolito)
-{
-
-    if(arbolito)
-    {
-        inorder(arbolito->izq);
-        printf("/ %d /", arbolito->dato.legajo);
-        inorder(arbolito->der);
-
-    }
-}
-
-void mostrarRama(nodoArbol *arbolito)
-{
-
-    printf("\nNumero de Legajo: %i \n", arbolito->dato.legajo);
-    printf("Nombre: %s \n", arbolito->dato.nombre);
-    printf("Edad: %i \n", arbolito->dato.edad);
-}
-
-
-nodo* crearNodo (persona aux)
-{
-
-    nodo* auxN = (nodo*) malloc(sizeof(nodo));
-    auxN->dato = aux;
-    auxN->sig = NULL;
-
-    return auxN;
-}
-
-nodo* inicNodo ()
-{
-
-    return NULL;
-}
-
-nodo* agregarPpio (nodo* lista, nodo* nuevoNodo)
-{
-
-    if(!lista)
-    {
-
-        lista = nuevoNodo;
-    }
-    else
-    {
-
-        nuevoNodo->sig = lista;
-        lista = nuevoNodo;
-    }
-
-
-    return lista;
-}
-
-nodo* cargarAlista (nodoArbol* arbolito, nodo* lista)
-{
-
-    nodo* nuevoNodo = inicNodo();
-
-    if(arbolito)
-    {
-        lista = cargarAlista(arbolito->izq, lista);
-
-        nuevoNodo = crearNodo(arbolito->dato);
-        lista = agregarPpio(lista, nuevoNodo);
-
-        lista = cargarAlista(arbolito->der, lista);
-    }
-
-    return lista;
-}
-
-void recorrerLista (nodo* lista)
+void mostrar_lista(nodoLista* lista)
 {
 
     if(lista)
     {
-        printf(".........................\n");
-        printf("Legajo: %d \n", lista->dato.legajo);
-        printf("Edad: %d \n", lista->dato.edad);
-        printf("Nombre: %s \n\n", lista->dato.nombre);
 
-        lista = lista->sig;
+        printf("\nNombre: %s", lista->dato.nombreYapellido);
+        printf("\nEdad: %i", lista->dato.edad);
+        printf("\nDni: %i", lista->dato.dni);
 
-        recorrerLista(lista);
+        mostrar_lista(lista->siguiente);
     }
 }
 
-
-
-nodoArbol* buscarEnArbol(nodoArbol* arbolito, int legajo)
+int buscar_posicion(especie arreglo[], int dimension, char nuevaEspecie[])
 {
 
-    nodoArbol* rta = arbolito;
-
-    if(arbolito && arbolito->dato.legajo != legajo)
-    {
-        rta= buscarEnArbol(arbolito->izq, legajo);
-        if(!rta)
-            rta= buscarEnArbol(arbolito->der, legajo);
-    }
-
-    return rta;
-}
-
-nodoArbol* buscarEnArbolNombre(nodoArbol* arbolito, char nombre[])
-{
-
-    nodoArbol* rta = inicNodoArbol();
-
-    if(arbolito)
-    {
-
-        if(strcmp(arbolito->dato.nombre, nombre) != 0)
-        {
-
-            rta = buscarEnArbolNombre(arbolito->izq, nombre);
-
-            if(!rta)
-                rta = buscarEnArbolNombre(arbolito->der, nombre);
-        }
-        else
-        {
-
-            rta = arbolito;
-        }
-    }
-
-    return rta;
-}
-
-int cantidad_hojas (nodoArbol* arbolito)
-{
+    int pos = -1;
     int i = 0;
 
-    if(arbolito)
+    while(i < dimension && pos == -1)
     {
-        if(arbolito->izq == NULL && arbolito->der == NULL)
-            i=1;
-        else
-            i = cantidad_hojas(arbolito->izq) + cantidad_hojas(arbolito->der);
+
+        if(strcmp(arreglo[i].nombreEspecie, nuevaEspecie) == 0)
+        {
+
+            pos = i;
+        }
+
+        i++;
     }
 
-    return i;
+    return pos;
 }
 
-int altura_arbol(nodoArbol* arbolito)
+int buscar_rango(especie arreglo[], int dimension, int rango)
 {
 
-    int alturaIzq = 0;
-    int alturaDer = 0;
-    int rta = 0;
-    if(arbolito)
+    int flag = 0;
+    int i = 0;
+
+    while(i < dimension && flag == 0)
     {
-        rta++;
-        if(arbolito->izq != NULL)
-        {
-            alturaIzq += altura_arbol(arbolito->izq);
-        }
-        if(arbolito->der != NULL)
-        {
-            alturaDer += altura_arbol(arbolito->der);
 
+        if(arreglo[i].rankPeligrosidad == rango)
+        {
+
+            flag = 1;
         }
 
-        if(alturaDer>alturaIzq)
-            rta += alturaDer;
-        else
-            rta += alturaIzq;
+        i++;
     }
-    return rta;
+
+    return flag;
 }
 
-int calcular_cant_nodos (nodoArbol* arbolito)
+int agregar_especie(especie arreglo[], int validos, char nuevaEspecie[], int rango)
+{
+    int flag = 0;
+
+    strcpy(arreglo[validos].nombreEspecie, nuevaEspecie);
+    arreglo[validos].rankPeligrosidad = rango;
+    arreglo[validos].promedioEdad = 0;
+
+    validos++;
+
+
+    return validos;
+}
+
+int agregar_contenido(especie arreglo[], int dimension, int validos)
 {
 
-    int cantNodos = 0;
+    char especie[30];
+    char letra2 = 's';
+    char letra = 's';
+    int flag = 1;
+    int rango = 0;
 
-
-    if(arbolito)
+    personaje aux;
+    while(letra == 's')
     {
-        cantNodos++;
-        if(arbolito->izq != NULL)
+
+
+        printf("Ingresa una especie: ");
+        fflush(stdin);
+        gets(&especie);
+
+        int pos = buscar_posicion(arreglo, 6, especie);
+
+        flag = 1;
+        letra = 's';
+        letra2 = 's';
+
+        while(flag == 1)
         {
 
-            cantNodos += calcular_cant_nodos(arbolito->izq);
+            printf("\n * Por favor, ingresar un rango que no este en uso...\n");
+
+            printf("Ingresa un rango a la especie: ");
+            fflush(stdin);
+            scanf("%i", &rango);
+
+            flag = buscar_rango(arreglo,6, rango);
 
         }
-        if(arbolito->der != NULL)
+
+        if(pos == -1)
         {
 
-            cantNodos += calcular_cant_nodos(arbolito->der);
+            validos = agregar_especie(arreglo, validos, especie, rango);
+            pos = validos-1;
+            arreglo[pos].personajes = iniciar_nodo();
         }
+
+        while(letra2 == 's')
+        {
+
+            system("cls");
+
+            printf("Ingresale un nombre: ");
+            fflush(stdin);
+            gets(&aux.nombreYapellido);
+
+            printf("Ingresa la edad del personaje: ");
+            fflush(stdin);
+            scanf("%i", &aux.edad);
+
+            printf("Ingresa el DNI: ");
+            fflush(stdin);
+            scanf("%i", &aux.dni);
+
+            nodoLista* nuevoNodo = crear_nodo(aux);
+
+            arreglo[pos].personajes = agregar_principio(arreglo[pos].personajes, nuevoNodo);
+
+            printf("Ingresa 's' para seguir agregando personajes a esta especie: ");
+            fflush(stdin);
+            scanf("%c", &letra2);
+        }
+
+        printf("Ingresa 's' para agregar otra especie: ");
+        fflush(stdin);
+        scanf("%c", &letra);
     }
+    return validos;
+}
+
+void mostrar_especie(especie arreglo[], int pos)
+{
+
+    printf("\nNombre de la especie: %s", arreglo[pos].nombreEspecie);
+    printf("\nRank #%i", arreglo[pos].rankPeligrosidad);
+    printf("\nEdad promedio: %.2f", arreglo[pos].promedioEdad);
+
+    mostrar_lista(arreglo[pos].personajes);
+
+}
+
+nodoArbol* iniciar_arbol()
+{
+    
+    return NULL;
+}
+
+nodoArbo* insertar (nodoArbol* arbolito, int pos)
+{
+    
+    if(!arbolito)
+    {
+        
+        arbolito->dato = aux;
+    }
+    else if(arbolito-> < personaje.edad)
+    {
+        
+        arbolito->izq = insertar(arbolito->izq, aux);
+    }
+    else
+    {
+        
+        arbolito->der = insertar(arbolito->der, aux);
+    }
+    
+    return arbolito;
+}
+
 
     return cantNodos;
 }
